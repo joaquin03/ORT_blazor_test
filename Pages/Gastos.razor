@@ -27,17 +27,6 @@ else
         <label for="comentario">Comentario</label>
         <InputText id="comentario" @bind-Value="gasto.Comentario" class="form-control"></InputText>
     </div>
-    <div>
-        <label for="categoria">Categoria</label>
-        <InputSelect ValueExpression="@(()=>gasto.Categoria)" 
-                 Value="@gasto.Categoria.Id" 
-                 ValueChanged="@((int value) => OnCatChanged(value))">
-            @foreach(var cat in SystemData.ListaCategorias)
-            {
-                <option value="@cat.Id">@cat.Nombre</option>
-            }
-        </InputSelect>
-    </div>
     <br />
     <button type="submit" class="btn btn-primary">@btnText</button>
    

@@ -1,0 +1,95 @@
+﻿@page "/gasto"
+@page "/gasto/{id:int}"
+
+@using GastosORT.Data
+@inject SystemData SystemData
+@inject NavigationManager NavigationManager
+
+@if (Id == null)
+{
+    <h3>Crear un Gasto</h3>
+}
+else
+{
+    <h3>Editar: @gasto.Comentario | @gasto.Fecha.ToShortDateString()</h3>
+}
+
+<EditForm Model="gasto" OnSubmit="HandleSubmit">
+    <div>
+        <label for="fecha">Fecha</label>
+        <InputDate id="fecha" @bind-Value="gasto.Fecha" class="form-control"></InputDate>
+    </div>
+    <div>
+        <label for="valor">Valor</label>
+        <InputNumber id="valor" @bind-Value="gasto.Valor" class="form-control"></InputNumber>
+    </div>
+    <div>
+        <label for="comentario">Comentario</label>
+        <InputText id="comentario" @bind-Value="gasto.Comentario" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="categoria">Categoria</label>
+        <InputSelect ValueExpression="@(()=>gasto.Categoria)" 
+                 Value="@gasto.Categoria.Id" 
+                 ValueChanged="@((int value) => OnCatChanged(value))">
+            @foreach(var cat in SystemData.ListaCategorias)
+            {
+                <option value="@cat.Id">@cat.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+   
+    @if (Id != null)
+    {
+        <button type="button" class="btn btn-danger" @onclick="DeleteGasto">Eliminar Gasto</button>
+    }
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    string btnText = string.Empty;
+
+    Gasto gasto = new Gasto();
+
+    protected override void OnInitialized()
+    {
+        btnText = Id == null ? "Crear un nuevo gasto" : "Actualizar Gasto";
+        
+        if (Id != null)
+        {
+           gasto = SystemData.GetSingleGasto((int)Id);
+        }
+        else {
+            gasto.Fecha = DateTime.Now;
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Id == null) {
+            SystemData.CreateGasto(gasto);
+        } else {
+            SystemData.UpdateGasto(gasto, (int)Id);
+        }
+        NavigationManager.NavigateTo("gastos");
+    }
+
+    async Task DeleteGasto()
+    {
+        SystemData.DeleteGasto(gasto);
+        NavigationManager.NavigateTo("gastos");
+    }
+
+    private Task OnCatChanged(int Id)
+    {
+        gasto.Categoria = SystemData.GetSingleCategoria(Id);
+        return Task.CompletedTask;
+    } 
+
+
+}

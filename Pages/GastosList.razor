@@ -1,0 +1,64 @@
+﻿@page "/gastos"
+
+@using GastosORT.Data
+@inject SystemData SystemData
+@inject NavigationManager NavigationManager
+
+<div class="row">
+    <h3 class="col-md">Listado De Gastos</h3>
+    <button class="btn btn-primary col-md-3" 
+        @onclick="(() => CreateGasto())">
+        Agregar
+        <i class="oi oi-plus"></i>
+    </button>
+</div>
+
+
+@if (SystemData.ListaGastos == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha</th>
+                <th>Valor</th>
+                <th>Categoria</th>
+                <th>Comentario</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Gasto in SystemData.ListaGastos)
+            {
+                <tr>
+                    <td>@Gasto.Id</td>
+                    <td>@Gasto.Fecha.ToShortDateString()</td>
+                    <td>@Gasto.Valor</td>
+                    <td>@Gasto.Categoria.Nombre</td>
+                    <td>@Gasto.Comentario</td>
+                    <td>
+                        <button class="btn btn-primary"
+                            @onclick="(() => ShowGasto(Gasto.Id))">
+                            <i class="oi oi-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    void ShowGasto(int id)
+    {
+       NavigationManager.NavigateTo($"gasto/{id}");
+    }
+    void CreateGasto()
+    {
+        NavigationManager.NavigateTo("gasto");
+    }
+}
